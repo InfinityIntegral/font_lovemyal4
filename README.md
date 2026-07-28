@@ -1,72 +1,33 @@
-# SingScript.sg (font for Mathematics and Science)
+# love my AL4 - README
 
-## About this project
+This README is for version 3 of my own font "love my AL4", previously known as "SingScript" or "SingScript.sg". Note that version 3 of the font is ASCII only and a full version would come later. Various scripts are included with short documentation that you can use for your own fonts
 
-This is a font, NOT A SCRIPTING LANGUAGE.
+love my AL4 is designed to render properly on all platforms. The font metrics are almost identical to Arial for that purpose. There is a monospace version also for use in terminals that do not properly support non monospace fonts.
 
-This is a font modelled after my handwriting supposed to include all Unicode characters in the Basic Multilingual Plane (U+0000 - U+FFFF) used in Mathematics, Science, and related fields. Since only Basic Multilingual Plane characters are included, it works perfectly with QString and QChar.
+The word "AL4" in the font name refers to the best possible grade in the PSLE (Singapore Primary School Leaving Examinations). The whole font is inspired by the PSLE, however the font does not have any affiliation with SEAB or MOE.
 
-The font does not support colour, so it does not have emojis. However, some emoji-like characters such as hearts and stars are included. The font uses a em size (maximum possible height of character) of 900, an ascent of 600, and a descent of 300.
+In the license, the font is referred to as "software" for convenience. You can interpret the FontForge project files (.sfd) as source code and the font (.ttf) as the "executable". FontForge is then the "build system"
 
-All characters in the font are handwritten and copied online by me using the template found in the writingtemplates folder.
+Current version of love my AL4: v3.0.0
 
-The kerningscripts folder contains scripts to automatically apply kerning to a font. There is also a usageinstructions.txt document in that folder which explains how to use the scripts.
+Published on: (none, work in progress)
 
-The encodingscripts folder contains scripts to bulk edit glyphs in your font file, specifically involving unused glyphs. See the usageinstructions.txt document in that folder for more information.
+I acknowledge that all technical and transferrable skills I used to work on this project are directly or indirectly taught to me by the Singapore Ministry of Education. I would like to thank my homeland for everything. Majulah Singapura. 🇸🇬
 
-## Completed Features (available in v2)
-- [x] "core" module
-	- [x] ASCII
-	- [x] basic Mathematics
-	- [x] SG mark (code point 0378)
-- [x] "one" module
-	- [x] whitespace
-	- [x] punctuation
-	- [x] Unicode superscripts and subscripts
-- [x] "greek" module
-	- [x] Greek letters for Mathematics and Science, not Greek language
-- [x] "somescript" module
-	- [x] full superscripts and subscripts (using Unicode enclosed CJK range, not Unicode compliant)
-- [x] "letterlike" module
-	- [x] Mathematics and Science characters from Unicode "letterlike" block
-- [x] "arrows" module
-	- [x] arrows in logic and Mathematics, not for diagrams or maps
-- [x] "math" module
-	- [x] full Unicode "Mathematical Operators" block
-	- [x] full Unicode "Miscellaneous Mathematical Operators A" block
-- [x] "misctech" module
-	- [x] symbols for engineering, electricity, chemistry, and UI design
-- [x] "oas" module
-	- [x] Optical Answer Sheet bubbles
-- [x] "tables" module
-	- [x] table mockup characters
-	- [x] progress bar characters
-	- [x] shading and "loading" animation characters
-- [x] "shapes" module
-	- [x] geometric shapes
-	- [x] emojis for academic use
-- [x] "controlpics" module
-	- [x] control pictures
-- [x] "everything" module
-	- [x] all other modules combined together into one single font
+## List of modules
 
-Future extensions may include the miscellaneous Math B and supplementary Math Unicode blocks.
+none, version 3 of love my AL4 is ASCII only
 
-## Credits
-- Git (https://git-scm.com/)
-- GitHub (https://github.com/)
-- LGPL License (https://opensource.org/license/lgpl-3-0)
-- FontForge (https://fontforge.org)
+## Setting up love my AL4
 
-## Contributing
-The best way to contribute is to complain. To complain refers to informing me of a bug or suggesting a new feature to be included to the software. Pls refer to the "Contact me" section below.
+just download the ttf file and install it on your operating system normally. After opening the file (double click it), there should be a "install" button somewhere.
 
-If I perceive your suggested feature to be beyond the scope of the software, I will not approve it. However, you can still download the code and build your own feature. As long as you keep the .sg in your project name, I am ok with it.
+## Legal info
 
-## Contact me
-Choose one of the following
-- email to infinityintegral333@gmail.com
-- message @05524F.sg on Instagram
+Copyright SG61 (2026) 05524F.sg
 
-## Am I blur
-no
+This product includes software developed at [05524F.sg](https://infinityintegral.github.io).
+
+Remember to include my NOTICE and LICENSE file in your application; you can put it under LICENSES/05524F.sg/SGEXTN
+
+The Apache 2.0 license forbids modifying the license itself, so the following is a suggestion not a legal requirement: You are encouraged to use the software to contribute to the National Interests of Singapore and the Singaporean and global public good. May the good we achieve, as one nation, be shared with the world.
