@@ -4,6 +4,8 @@ This README is for version 3 of my own font "love my AL4", previously known as "
 
 love my AL4 is designed to render properly on all platforms. The font metrics are almost identical to Arial for that purpose. There is a monospace version also for use in terminals that do not properly support non monospace fonts.
 
+This is the font you use to message your friends on PSLE Results Day about you getting perfect score AL4 (AL1 in every subject), but also, you are cute and pokable and squishy like the swollen red blood cell diagrams in Science Paper 2
+
 The word "AL4" in the font name refers to the best possible grade in the PSLE (Singapore Primary School Leaving Examinations). The whole font is inspired by the PSLE, however the font does not have any affiliation with SEAB or MOE.
 
 In the license, the font is referred to as "software" for convenience. You can interpret the FontForge project files (.sfd) as source code and the font (.ttf) as the "executable". FontForge is then the "build system"
