@@ -1,0 +1,26 @@
+import fontforge
+
+startingSlot = 0
+startingUnicode = 0
+numberOfSlots = 128
+
+font = fontforge.activeFont()
+if font:
+    for offset in range(numberOfSlots):
+        current_slot = startingSlot + offset
+        glyph = font.createMappedChar(current_slot)
+        if startingUnicode == -1:
+            glyph.unicode = -1
+            glyph.glyphname = f"NameMe.{current_slot}"
+        else:
+            target_unicode = startingUnicode + offset
+            glyph.unicode = target_unicode
+            std_name = fontforge.nameFromUnicode(target_unicode)
+            if std_name:
+                glyph.glyphname = std_name
+            elif "NameMe" in glyph.glyphname:
+                glyph.glyphname = f"uni{target_unicode:04X}"
+    if font.path:
+        font.save(font.path)
+    else:
+        font.save()

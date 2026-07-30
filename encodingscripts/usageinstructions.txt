@@ -4,4 +4,6 @@ properlynameglyphs.txt properly names all glyphs in your FontForge file assuming
 
 removeemptyglyphs.txt sets the Unicode code point of all unused glyphs in your FontForge file to -1 so that they can be removed using Encoding > Remove Unused Slots, however note that this removes only unused slots behind the last used slot. This script has been tested to not delete spaces by accident.
 
+fixencoding.txt encodes a range of slots with the specified Unicode range, if the starting point of the Unicode range is -1, it clears the slots instead.
+
 To run a script, copy paste it to the File > Execute Script dialog in FontForge and run it there.
