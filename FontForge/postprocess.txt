@@ -1,0 +1,8 @@
+validate
+correct direction
+remove overlap
+simplify
+round to int
+add points to extrema
+hint
+validate
