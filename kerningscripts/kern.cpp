@@ -90,10 +90,11 @@ struct Font{
     static constexpr int maximumUnicode = 126;
     static constexpr int glyphCount = Font::maximumUnicode - Font::minimumUnicode + 1;
     static constexpr double flatnessBound = 0.1;
-    static constexpr double descentSize = 300.0f;
-    static constexpr double ascentSize = 600.0f;
-    static constexpr double emSize = Font::ascentSize + Font::descentSize;
-    static constexpr double targetSeparation = 50.0f;
+    static constexpr double descentSize = 1059.0;
+    static constexpr double ascentSize = 2118.0;
+    static constexpr double ascentPlusDescent = Font::ascentSize + Font::descentSize;
+    static constexpr double targetSeparation = 150.0;
+    static constexpr double collisionTolerance = 100.0;
     std::array<Glyph, Font::glyphCount>* glyphs;
     Font(){
         glyphs = new std::array<Glyph, Font::glyphCount>();
@@ -104,7 +105,7 @@ double distanceSquaredToLine(Point p1, Point p2, Point x){
     Point ap = Point(x.x - p1.x, x.y - p1.y);
     Point ab = Point(p2.x - p1.x, p2.y - p1.y);
     double distAB = ab.x * ab.x + ab.y * ab.y;
-    if(std::abs(distAB) < Font::flatnessBound){return 0.0;}
+    if(std::abs(distAB) < Font::flatnessBound){return (ap.x * ap.x + ap.y * ap.y);}
     double t = (ap.x * ab.x + ap.y * ab.y) / distAB;
     if(t < 0.0){t = 0.0;}
     else if(t > 1.0){t = 1.0;}
@@ -118,11 +119,11 @@ bool curveIsFlat(BezierCurve c){
 }
 
 double normaliseY(double y){
-    return ((y + Font::descentSize) / Font::emSize * static_cast<double>(Glyph::verticalSampleSize));
+    return ((y + Font::descentSize) / Font::ascentPlusDescent * static_cast<double>(Glyph::verticalSampleSize));
 }
 
 double unnormaliseY(double y){
-    return (y / static_cast<double>(Glyph::verticalSampleSize) * Font::emSize - Font::descentSize);
+    return (y / static_cast<double>(Glyph::verticalSampleSize) * Font::ascentPlusDescent - Font::descentSize);
 }
 
 int main(){
@@ -239,8 +240,8 @@ int main(){
         for(int i=0; i<Font::glyphCount; i++){
             Glyph& currentGlyph = (*(*myFont).glyphs).at(i);
             std::queue<BezierCurve>* unrasterisedCurves = new std::queue<BezierCurve>();
-            for(int i=0; i<(*currentGlyph.curves).size(); i++){
-                (*unrasterisedCurves).push((*currentGlyph.curves).at(i));
+            for(int j=0; j<(*currentGlyph.curves).size(); j++){
+                (*unrasterisedCurves).push((*currentGlyph.curves).at(j));
             }
             currentGlyph.curves = nullptr;
             while((*unrasterisedCurves).size() > 0){
@@ -253,7 +254,7 @@ int main(){
                 Point e = Point((b.x + c.x) / 2.0, (b.y + c.y) / 2.0);
                 Point f = Point((d.x + e.x) / 2.0, (d.y + e.y) / 2.0);
                 BezierCurve newCurve1 = BezierCurve(oldCurve.point1, a, d, f);
-                BezierCurve newCurve2 = BezierCurve(f, e, c, oldCurve.point3);
+                BezierCurve newCurve2 = BezierCurve(f, e, c, oldCurve.point4);
                 if(curveIsFlat(newCurve1) == true){(*currentGlyph.rasterisedCurves).push_back(Line(newCurve1.point1, newCurve1.point4));}
                 else{(*unrasterisedCurves).push(newCurve1);}
                 if(curveIsFlat(newCurve2) == true){(*currentGlyph.rasterisedCurves).push_back(Line(newCurve2.point1, newCurve2.point4));}
@@ -273,6 +274,7 @@ int main(){
             }
             for(int j=0; j<(*currentGlyph.rasterisedCurves).size(); j++){
                 Line& currentLine = (*currentGlyph.rasterisedCurves).at(j);
+                if(currentLine.point1.y == currentLine.point2.y){continue;}
                 int boundBelow = static_cast<int>(std::floor(normaliseY(std::min(currentLine.point1.y, currentLine.point2.y))));
                 int boundAbove = static_cast<int>(std::ceil(normaliseY(std::max(currentLine.point1.y, currentLine.point2.y))));
                 if(boundBelow < 0){boundBelow = 0;}
@@ -291,7 +293,7 @@ int main(){
     }
     
     {
-        int verticalAverageSize = static_cast<int>(std::ceil(static_cast<double>(Glyph::verticalSampleSize) * Font::targetSeparation / Font::emSize));
+        int verticalAverageSize = static_cast<int>(std::ceil(0.5 * static_cast<double>(Glyph::verticalSampleSize) * Font::targetSeparation / Font::ascentPlusDescent));
         for(int i=0; i<(*myFont).glyphCount; i++){
             Glyph& currentGlyph = (*(*myFont).glyphs).at(i);
             for(int j=0; j<Glyph::verticalSampleSize; j++){
@@ -302,8 +304,13 @@ int main(){
                 double l = currentGlyph.width;
                 double r = currentGlyph.width;
                 for(int k=boundBelow; k<=boundAbove; k++){
-                    if((*currentGlyph.leftBound).at(k) < l){l = (*currentGlyph.leftBound).at(k);}
-                    if((*currentGlyph.rightBound).at(k) < r){r = (*currentGlyph.rightBound).at(k);}
+                    double verticalGap = 0.0;
+                    verticalGap = k - j;
+                    if(verticalGap < 0.0){verticalGap *= -1.0;}
+                    verticalGap *= Font::ascentPlusDescent / Glyph::verticalSampleSize;
+                    double heightAdjustFactor = Font::targetSeparation - std::sqrt(Font::targetSeparation * Font::targetSeparation - verticalGap * verticalGap);
+                    if((*currentGlyph.leftBound).at(k) + heightAdjustFactor < l){l = (*currentGlyph.leftBound).at(k) + heightAdjustFactor;}
+                    if((*currentGlyph.rightBound).at(k) + heightAdjustFactor < r){r = (*currentGlyph.rightBound).at(k) + heightAdjustFactor;}
                 }
                 (*currentGlyph.averagedLeftBound).at(j) = l;
                 (*currentGlyph.averagedRightBound).at(j) = r;
@@ -320,13 +327,18 @@ int main(){
                 Glyph& rightGlyph = (*(*myFont).glyphs).at(j);
                 bool kerningApplied = false;
                 int kerningResult = -100000;
+                int overlapCount = 0;
                 for(int k=0; k<Glyph::verticalSampleSize; k++){
-                    if((*leftGlyph.rightBound).at(k) == leftGlyph.width || (*rightGlyph.averagedLeftBound).at(k) == rightGlyph.width){continue;}
-                    int suggestedKerning = static_cast<int>(std::round(Font::targetSeparation - (*leftGlyph.rightBound).at(k) - (*rightGlyph.averagedLeftBound).at(k)));
+                    if((*leftGlyph.averagedRightBound).at(k) == leftGlyph.width || (*rightGlyph.averagedLeftBound).at(k) == rightGlyph.width){continue;}
+                    overlapCount++;
+                    int suggestedKerning = static_cast<int>(std::round(Font::targetSeparation - (*leftGlyph.averagedRightBound).at(k) - (*rightGlyph.averagedLeftBound).at(k)));
                     kerningApplied = true;
+                    int maximumKernMagnitude = static_cast<int>(0.4f * static_cast<float>(leftGlyph.width + rightGlyph.width));
+                    if(suggestedKerning < (-1) * maximumKernMagnitude){suggestedKerning = (-1) * maximumKernMagnitude;}
+                    else if(suggestedKerning > maximumKernMagnitude){suggestedKerning = maximumKernMagnitude;}
                     if(suggestedKerning > kerningResult){kerningResult = suggestedKerning;}
                 }
-                if(kerningApplied == false){(*outputData).at(i * Font::glyphCount + j) = 0;}
+                if(overlapCount < static_cast<int>((Font::collisionTolerance + Font::targetSeparation) * Glyph::verticalSampleSize / Font::ascentPlusDescent)){(*outputData).at(i * Font::glyphCount + j) = 0;}
                 else{(*outputData).at(i * Font::glyphCount + j) = kerningResult;}
             }
         }
@@ -339,9 +351,7 @@ int main(){
             Glyph& leftGlyph = (*(*myFont).glyphs).at(i);
             for(int j=0; j<Font::glyphCount; j++){
                 Glyph& rightGlyph = (*(*myFont).glyphs).at(j);
-                if(std::abs((*outputData).at(i * Font::glyphCount + j)) >= 5){
-                    outFile << leftGlyph.unicode << " " << rightGlyph.unicode << " " << (*outputData).at(i * Font::glyphCount + j) << "\n";
-                }
+                outFile << leftGlyph.unicode << " " << rightGlyph.unicode << " " << (*outputData).at(i * Font::glyphCount + j) << "\n";
             }
         }
         std::cout << "outputted kerning data\n";

@@ -1,8 +1,9 @@
-validate
+auto width / monospace (using script)
 correct direction
-remove overlap
 simplify
 round to int
 add points to extrema
-hint
+remove overlap
 validate
+kern (using script)
+hint
