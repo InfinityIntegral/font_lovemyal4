@@ -1,8 +1,6 @@
 import fontforge;
-
 startCode = 0x0;
 endCode = 0x7F;
-
 font = fontforge.activeFont();
 for i in range(startCode, endCode + 1):
     glyph = font.createChar(i, fontforge.nameFromUnicode(i));

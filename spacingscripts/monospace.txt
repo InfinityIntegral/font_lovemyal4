@@ -1,29 +1,20 @@
 import sys
 import fontforge
-
-# --- CONFIGURATION PARAMETERS ---
 TARGET_WIDTH = 1379
 MODE = 1  # 0 = Info mode, 1 = Edit mode
-
 font = fontforge.activeFont()
 if font is None:
     fontforge.postError("Error", "No active font open in FontForge!")
     sys.exit(1)
-
 log = []
-
-# 1. Define Non-Trivial Glyphs (Numbers + Uppercase ASCII + Lowercase ASCII)
 nontrivial_chars = []
-nontrivial_chars.extend(range(0x0030, 0x003A))  # 0-9
-nontrivial_chars.extend(range(0x0041, 0x005B))  # A-Z
-nontrivial_chars.extend(range(0x0061, 0x007B))  # a-z
-
-# 2. Calculate Percentile of TARGET_WIDTH within non-trivial glyphs
+nontrivial_chars.extend(range(0x0030, 0x003A))
+nontrivial_chars.extend(range(0x0041, 0x005B))
+nontrivial_chars.extend(range(0x0061, 0x007B))
 nontrivial_widths = []
 for codepoint in nontrivial_chars:
     if codepoint in font:
         nontrivial_widths.append(font[codepoint].width)
-
 if nontrivial_widths:
     nontrivial_widths.sort()
     count_less_or_equal = sum(1 for w in nontrivial_widths if w <= TARGET_WIDTH)
@@ -33,8 +24,6 @@ if nontrivial_widths:
     log.append(f"Percentile of target width among non-trivial glyphs: {percentile:.2f}%")
 else:
     log.append("Warning: No non-trivial ASCII glyphs found in this font.")
-
-# 3. List all glyphs exceeding TARGET_WIDTH with excess amount
 exceeding_glyphs = []
 for glyph in font.glyphs():
     if glyph.width > TARGET_WIDTH:
@@ -44,38 +33,25 @@ for glyph in font.glyphs():
         else:
             char_repr = f"Glyph Name: '{glyph.glyphname}'"
         exceeding_glyphs.append((char_repr, glyph.width, excess))
-
 log.append(f"\nGlyphs exceeding chosen width ({len(exceeding_glyphs)} found):")
 for char_repr, width, excess in exceeding_glyphs:
     log.append(f"  - {char_repr} | Current Width: {width} | Excess: +{excess}")
-
-# 4. If Edit Mode (1), set width and center contours based ONLY on Foreground layer
 if MODE == 1:
     log.append("\n--- EDIT MODE: Centering glyphs (Foreground only) and applying target width ---")
     modified_count = 0
-
     for glyph in font.glyphs():
-        # Inspect ONLY the Foreground layer ("Fore") bounding box
         fore_layer = glyph.layers["Fore"]
         bbox = fore_layer.boundingBox()
         xmin, xmax = bbox[0], bbox[2]
         glyph_visual_width = xmax - xmin
-
         if glyph_visual_width > 0:
             desired_lb = (TARGET_WIDTH - glyph_visual_width) / 2.0
             shift_x = desired_lb - xmin
-            
-            # Apply transformation across the entire glyph (keeps stroke/other layers aligned)
             glyph.transform((1, 0, 0, 1, shift_x, 0))
-
         glyph.width = TARGET_WIDTH
         modified_count += 1
-
     log.append(f"Successfully monospaced {modified_count} glyphs to width {TARGET_WIDTH}.")
-
-# Display output in a GUI popup window
 report_text = "\n".join(log)
-
 if fontforge.hasUserInterface():
     fontforge.postNotice("Monospace Script Output", report_text)
 else:

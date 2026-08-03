@@ -1,7 +1,5 @@
 import fontforge;
-
 font = fontforge.activeFont();
-
 for s in font:
     glyph = font[s];
     if glyph.unicode != -1:

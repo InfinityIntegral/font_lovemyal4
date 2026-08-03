@@ -128,7 +128,7 @@ double unnormaliseY(double y){
 
 int main(){
     Font* myFont = new Font();
-    
+
     {
         std::ifstream inFile("glyphsdata.txt");
         Glyph nullGlyph(0, 0);
@@ -235,7 +235,7 @@ int main(){
         }
         std::cout << "data loaded\n";
     }
-    
+
     {
         for(int i=0; i<Font::glyphCount; i++){
             Glyph& currentGlyph = (*(*myFont).glyphs).at(i);
@@ -264,7 +264,7 @@ int main(){
         }
         std::cout << "rasterised glyphs\n";
     }
-    
+
     {
         for(int i=0; i<Font::glyphCount; i++){
             Glyph& currentGlyph = (*(*myFont).glyphs).at(i);
@@ -291,7 +291,7 @@ int main(){
         }
         std::cout << "computed bounds\n";
     }
-    
+
     {
         int verticalAverageSize = static_cast<int>(std::ceil(0.5 * static_cast<double>(Glyph::verticalSampleSize) * Font::targetSeparation / Font::ascentPlusDescent));
         for(int i=0; i<(*myFont).glyphCount; i++){
@@ -318,7 +318,7 @@ int main(){
         }
         std::cout << "computed average bounds\n";
     }
-    
+
     std::array<int, Font::glyphCount * Font::glyphCount>* outputData = new std::array<int, Font::glyphCount * Font::glyphCount>();
     {
         for(int i=0; i<Font::glyphCount; i++){
@@ -333,18 +333,19 @@ int main(){
                     overlapCount++;
                     int suggestedKerning = static_cast<int>(std::round(Font::targetSeparation - (*leftGlyph.averagedRightBound).at(k) - (*rightGlyph.averagedLeftBound).at(k)));
                     kerningApplied = true;
-                    int maximumKernMagnitude = static_cast<int>(0.4f * static_cast<float>(leftGlyph.width + rightGlyph.width));
-                    if(suggestedKerning < (-1) * maximumKernMagnitude){suggestedKerning = (-1) * maximumKernMagnitude;}
-                    else if(suggestedKerning > maximumKernMagnitude){suggestedKerning = maximumKernMagnitude;}
                     if(suggestedKerning > kerningResult){kerningResult = suggestedKerning;}
                 }
+                int maximumKernMagnitude = static_cast<int>(0.4f * static_cast<float>(leftGlyph.width));
+                if(rightGlyph.width < leftGlyph.width){maximumKernMagnitude = static_cast<int>(0.4f * static_cast<float>(rightGlyph.width));}
+                if(kerningResult < (-1) * maximumKernMagnitude){kerningResult = (-1) * maximumKernMagnitude;}
+                else if(kerningResult > maximumKernMagnitude){kerningResult = maximumKernMagnitude;}
                 if(overlapCount < static_cast<int>((Font::collisionTolerance + Font::targetSeparation) * Glyph::verticalSampleSize / Font::ascentPlusDescent)){(*outputData).at(i * Font::glyphCount + j) = 0;}
                 else{(*outputData).at(i * Font::glyphCount + j) = kerningResult;}
             }
         }
         std::cout << "generated kerning data\n";
     }
-    
+
     {
         std::ofstream outFile("kerningdata.txt");
         for(int i=0; i<Font::glyphCount; i++){
@@ -356,6 +357,6 @@ int main(){
         }
         std::cout << "outputted kerning data\n";
     }
-    
+
     std::cout << "programme completed successfully";
 }

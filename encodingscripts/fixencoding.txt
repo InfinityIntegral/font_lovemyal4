@@ -1,9 +1,7 @@
 import fontforge
-
 startingSlot = 0
 startingUnicode = 0
 numberOfSlots = 128
-
 font = fontforge.activeFont()
 if font:
     for offset in range(numberOfSlots):

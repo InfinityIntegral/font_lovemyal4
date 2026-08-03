@@ -1,23 +1,21 @@
 import fontforge;
-
+import os;
 def report_error(msg, outfile):
     outfile.write(msg + '\n');
     zero = 0;
     terminate = 726 / zero;
-
 def main():
+    font = fontforge.activeFont();
+    font_dir = os.path.dirname(os.path.abspath(font.path));
+    os.chdir(font_dir);
     with open("../kerningscripts/glyphsdata.txt", "w") as outfile:
-        font = fontforge.activeFont();
-
         log = [""] * 94;
-
         for glyph in font.glyphs():
             cp = glyph.unicode;
             if cp <= 32:
                 continue;
             if cp >= 127:
                 continue;
-
             curves = "U+" + str(cp) + " " + str(glyph.width) + " ";
             for contour in glyph.layers[1]:
                 for point in contour:
@@ -28,9 +26,7 @@ def main():
                 curves += "END ";
             curves += "ENDGLYPH\n";
             log[cp - 33] = curves;
-
         for s in log:
             outfile.write(s);
         outfile.write("EXTRACTIONCOMPLETE\n");
-
 main();

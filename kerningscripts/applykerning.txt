@@ -1,10 +1,12 @@
 import fontforge;
-
+import os;
 a = [];
 b = [];
 v = [];
 n = 0;
-
+font = fontforge.activeFont();
+font_dir = os.path.dirname(os.path.abspath(font.path));
+os.chdir(font_dir);
 with open("../kerningscripts/kerningdata.txt", "r") as f:
     for line in f:
         parts = line.strip().split();
@@ -13,16 +15,12 @@ with open("../kerningscripts/kerningdata.txt", "r") as f:
         b.append(y);
         v.append(z);
         n += 1;
-
-font = fontforge.activeFont();
 font.addLookup("kernGPOS", "gpos_pair", (), (("kern", (("DFLT", ("dflt",)),)),))
 font.addLookupSubtable("kernGPOS", "kernGPOS-1")
-
 for s in font:
     glyph = font[s];
     if glyph.unicode != -1:
         glyph.glyphname = fontforge.nameFromUnicode(glyph.unicode);
-
 for i in range(len(v)):
     if fontforge.nameFromUnicode(a[i]) in font:
         font[fontforge.nameFromUnicode(a[i])].addPosSub("kernGPOS-1", fontforge.nameFromUnicode(b[i]), v[i]);
