@@ -1,8 +1,1 @@
 build*/
-*.o
-*.exe
-*.user
-*.pro.user
-*.qmake.stash
-*.autosave
-.DS_Store
